@@ -15,6 +15,9 @@ from app.routes.auth_routes import auth_ns
 from app.routes.reporte_routes import reporte_ns
 from app.routes.corte_routes import corte_ns
 from app.errors.handlers import register_error_handlers
+import logging
+
+logger = logging.getLogger(__name__)
 
 def create_app():
     app = Flask(__name__)
@@ -22,15 +25,27 @@ def create_app():
     app.config["DEBUG"] = True
     db.init_app(app)
 
-    # Inicializar CORS
-    CORS(app, resources={
-        r"/*": {
-            "origins": [
-                "http://localhost:4200",
-                "https://tu-frontend.onrender.com"
-            ]
-        }
-    })
+    # log de cada petición
+    @app.before_request
+    def log_request():
+        from flask import request
+        logger.info(f"➡️  {request.method} {request.path} - Origin: {request.headers.get('Origin')}")
+
+    @app.after_request
+    def log_response(response):
+        from flask import request
+        logger.info(f"⬅️  {request.method} {request.path} - Status: {response.status_code}")
+        return response
+
+
+
+    # Inicializar CORS - permite todo en desarrollo
+    CORS(app,
+         origins=["*"],
+         allow_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         supports_credentials=True
+         )
 
 
     # Inicializar JWT
