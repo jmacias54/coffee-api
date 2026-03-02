@@ -3,6 +3,7 @@ from flask import Flask
 from flask_restx import Api
 from app.database import db
 from app.config import Config
+from flask_cors import CORS
 
 from flask_jwt_extended import JWTManager
 
@@ -20,6 +21,16 @@ def create_app():
     app.config.from_object(Config)
     app.config["DEBUG"] = True
     db.init_app(app)
+
+    # Inicializar CORS
+    CORS(app, resources={
+        r"/*": {
+            "origins": [
+                "http://localhost:4200",
+                "https://tu-frontend.onrender.com"
+            ]
+        }
+    })
 
 
     # Inicializar JWT
