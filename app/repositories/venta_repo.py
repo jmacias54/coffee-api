@@ -34,6 +34,7 @@ class VentaRepo:
             usuario_id  = data["usuario_id"]
         )
         db.session.add(venta)
+        db.session.flush()
         return venta
 
     def actualizar_estado(self, id, estado):
