@@ -39,7 +39,9 @@ class VentaList(Resource):
     @venta_ns.expect(venta_input_model(venta_ns))
     @venta_ns.doc(description="Registrar una nueva venta")
     def post(self):
+        identity = json.loads(get_jwt_identity())
         data = request.get_json()
+        data['usuario_id'] = identity['id']
         venta = service.crear(data)
         return venta_a_dict(venta), 201
 
